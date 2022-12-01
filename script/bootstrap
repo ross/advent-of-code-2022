@@ -25,6 +25,14 @@ if [ -f requirements.txt ]; then
     python -m pip install -r requirements.txt
 fi
 
+if [ -d ".git" ]; then
+    if [ ! -L ".git/hooks/pre-commit" ]; then
+        echo ""
+        echo "Installing pre-commit hook"
+        ln -s "$ROOT/.git_hooks_pre-commit" ".git/hooks/pre-commit"
+    fi
+fi
+
 echo ""
 echo "Run source env/bin/activate to get your shell in to the virtualenv"
 echo "See README.md for more information."
