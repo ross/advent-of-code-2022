@@ -21,7 +21,8 @@ for row in stdin:
     else:
         # you lost, your opponent played the "next" value (with wrapping)
         score = 0
-    # this round's result is the score plus what you played
+    # this round's result is the score plus what you played + 1 (to make it 1-3
+    # rather than 0-2)
     total += score + you + 1
 
 print(total)
