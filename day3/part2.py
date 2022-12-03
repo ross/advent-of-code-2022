@@ -14,7 +14,7 @@ for row in stdin:
     if len(group) == 3:
         # we now have 3 elves, time to find the badge, the union of the 3 elves
         # sets of contents provides the common item
-        common = list(group[0] & group[1] & group[2])[0]
+        (common,) = group[0] & group[1] & group[2]
         # convert it to a priority
         if common <= 'Z':
             # uppercase

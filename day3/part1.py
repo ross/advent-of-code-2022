@@ -18,7 +18,7 @@ for row in stdin:
     # everything from divider through the end is the second compartment
     compartment_2 = set(row[divider:])
     # there's only one duplicated item the union of the two sets finds it
-    dup = list(compartment_1 & compartment_2)[0]
+    (dup,) = compartment_1 & compartment_2
     if dup <= 'Z':
         # uppercase
         priority = ord(dup) - ord_A
