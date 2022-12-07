@@ -16,7 +16,7 @@ for row in stdin:
     while i < n:
         # grab our next character
         ch = row[i]
-        # if we're far enough along to have a match
+        # if we're far enough along to need to remove things from seen
         if i > 3:
             # we need to consider the character that should be leaving this
             # round
@@ -27,8 +27,8 @@ for row in stdin:
                 del seen[maybe_leaving]
         # if we've already seen the current character we have a dup
         if ch in seen:
-            # remember the point at which we saw the most recent dup, we can't
-            # have a marker until we're past that point
+            # remember the point at which we saw the first occurance of the dup,
+            # we can't have a marker until we're past that point
             dup_until = seen[ch]
         # record that we've seen the current character
         seen[ch] = i
