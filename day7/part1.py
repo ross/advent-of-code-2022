@@ -22,7 +22,7 @@ for row in stdin:
         commands.append(command)
     else:
         # it's output from the most recent command, append it
-        command['output'].append(row)
+        command['output'].append(row.split(' '))
 
 # now process the commands to calculate directory sizes
 sizes = defaultdict(lambda: 0)
@@ -48,7 +48,7 @@ for command in commands:
             try:
                 # split the output line, if we can convert the first piece to
                 # an int then it's a filesize and needs to be counted
-                size = int(line.split(' ', 1)[0])
+                size = int(line[0])
             except ValueError:
                 # otherwise it's a child directory and can be ignored, move on
                 # to the next output line
