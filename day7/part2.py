@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from collections import defaultdict
-from pprint import pprint
 from sys import stdin
 
 
@@ -10,6 +9,7 @@ def parents(path):
         yield path[:-i]
 
 
+# parse our commands and their output
 commands = []
 for row in stdin:
     row = row.strip()
@@ -21,16 +21,17 @@ for row in stdin:
         command = {'exe': exe, 'args': args, 'output': []}
         commands.append(command)
     else:
+        # it's output from the most recent command, append it
         command['output'].append(row)
 
-pprint({'commands': commands})
-
+# now process the commands to calculate directory sizes
 sizes = defaultdict(lambda: 0)
+#  our current path
 path = tuple()
 for command in commands:
-    pprint({'command': command, 'path': path})
     exe = command['exe']
     if exe == 'cd':
+        # the arg is the directory change to be made
         arg = command['args'][0]
         if arg == '/':
             # change to root
@@ -42,6 +43,7 @@ for command in commands:
             # go down one level to a child
             path = path + (arg,)
     elif exe == 'ls':
+        # some of the output lines will contain file sizes
         for line in command['output']:
             try:
                 # split the output line, if we can convert the first piece to
@@ -57,33 +59,19 @@ for command in commands:
             for parent in parents(path):
                 sizes[parent] += size
 
-pprint(sizes)
-
+# calculate how much space we need
 total_disk = 70000000
 # available disk space is ^ minus /'s size
 available_disk = total_disk - sizes[tuple()]
 update_requires = 30000000
 need_to_free = update_requires - available_disk
 
-pprint(
-    {
-        'total_disk': total_disk,
-        'available_disk': available_disk,
-        'update_requires': update_requires,
-        'need_to_free': need_to_free,
-    }
-)
-
 # find directories that are large enough to give us the required space when
 # deleted, we don't care about paths
 candidates = [s for s in sizes.values() if s > need_to_free]
 
-pprint({'candidates': candidates})
-
 # sort them smallest to largest
 candidates.sort()
 
-pprint({'sorted': candidates})
-
-# the first one is our best option, we're after its size
+# the first one is our best option, the smallest, we're after its size
 print(candidates[0])
