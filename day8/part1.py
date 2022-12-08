@@ -2,18 +2,22 @@
 
 from sys import stdin
 
+# create 2d lists from input strings, first will hold the tree heights
 trees = []
+# second will mark whether we've seen this tree before (from another direction)
 seen = []
 for row in stdin:
     row = row.strip()
     row = [int(v) for v in row]
     trees.append(row)
+    # initial we need False for each tree, this creates the correct length array
+    # of Falses
     seen.append([False] * len(row))
 
 visible = 0
-# rotating 90 clockwise, 4 times gives us all directions
+# rotating trees 90d clockwise, 4 times lets us look from all directions with
+# code that only knows how to look left to right.
 for _ in range(4):
-    # process left to right
     # for each row
     for y in range(len(trees)):
         row_trees = trees[y]
