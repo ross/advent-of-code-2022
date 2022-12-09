@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from collections import defaultdict
 from sys import argv, stdin
 from pprint import pprint
 
@@ -67,9 +66,9 @@ class Follower(Knot):
     def __init__(self, id, leader, *args, **kwargs):
         super().__init__(id, *args, **kwargs)
         self.leader = leader
-        self.cells_visited = defaultdict(dict)
+        self.cells_visited = set()
         # we need to visit our start point
-        self.cells_visited[0][0] = 1
+        self.cells_visited.add((0, 0))
 
     def tick(self):
         d_x = self.leader.x - self.x
@@ -117,7 +116,7 @@ class Follower(Knot):
                 self.x -= 1
 
         # flag that we visited our current cell
-        self.cells_visited[self.y][self.x] = 1
+        self.cells_visited.add((self.y, self.x))
 
         if self.verbose:
             pprint(
@@ -137,7 +136,7 @@ class Follower(Knot):
         # we have inserted a 1 in each cell we visited, so if we sum the rows
         # and then sum the sums we'll have a count of the number of cells
         # visited
-        return sum(sum(v.values()) for v in self.cells_visited.values())
+        return len(self.cells_visited)
 
 
 verbose = 'verbose' in argv or 'all' in argv
