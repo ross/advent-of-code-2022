@@ -13,6 +13,7 @@ class Cpu:
 
     def _tick(self):
         self.cycle += 1
+        # 20th and every 40th after that
         if self.cycle == 20 or (self.cycle - 20) % 40 == 0:
             signal_strength = self.cycle * self.X
             print(
@@ -24,7 +25,7 @@ class Cpu:
         op = getattr(self, op)
         op(*args)
         if self.debug:
-            pprint({'cycle': self.cycle, 'X': self.X})
+            pprint({'op': op, 'args': args, 'cycle': self.cycle, 'X': self.X})
 
     def addx(self, value):
         self._tick()
