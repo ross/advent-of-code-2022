@@ -69,10 +69,9 @@ class Monkey:
                 print(f'  post % {prod}={item}')
             # decide where to throw it based on whether or not it divides
             # evenly, no remainer
-            if self.debug:
-                print(f'  item % {self.divisor}={item % self.divisor}')
             target = self.if_false if item % self.divisor else self.if_true
             if self.debug:
+                print(f'  item % {self.divisor}={item % self.divisor}')
                 print(f'  target={target}')
             yield item, target
 
