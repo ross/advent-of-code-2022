@@ -53,19 +53,24 @@ class Monkey:
             self.inspected += 1
             if self.debug:
                 print(f'item={item}')
+            # perform our operation
             item = self.op(item)
             if self.debug:
                 print(f'  post op={item}')
-            # so the monkeys don't actually care what the item's worry level
-            # actually is, they just care about whether it's divisible by their
-            # divisor. in order to keep the worry levels in check we'll divide
-            # them by the product of all the monkey's divisors. this will
-            # preserve the results of our checking with % while keeping the
-            # numbers small enough to avoid the slow and expensive python large
-            # number support (that might work, but not for a very very long
-            # time.)
+            # so the monkeys don't care what the item's worry level actually is,
+            # they just care about whether it's divisible by their divisor. in
+            # order to keep the worry levels in check we'll mod them by the
+            # product of all the monkey's divisors. this will preserve the
+            # results of our checking with % while keeping the numbers small
+            # enough to avoid the slow and expensive python large number support
+            # (that might work, but not for a very very long time.)
             item %= prod
-            # did it evenly divide
+            if self.debug:
+                print(f'  post % {prod}={item}')
+            # decide where to throw it based on whether or not it divides
+            # evenly, no remainer
+            if self.debug:
+                print(f'  item % {self.divisor}={item % self.divisor}')
             target = self.if_false if item % self.divisor else self.if_true
             if self.debug:
                 print(f'  target={target}')

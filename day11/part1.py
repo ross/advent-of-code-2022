@@ -53,14 +53,16 @@ class Monkey:
             self.inspected += 1
             if self.debug:
                 print(f'item={item}')
+            # perform our operation
             item = self.op(item)
             if self.debug:
                 print(f'  post op={item}')
-            # divide by 3 and round down
+            # divide by 3 and round down due to relief
             item = int(item / 3)
             if self.debug:
                 print(f'  divided and rounded={item}')
-            # did it evenly divide
+            # decide where to throw it based on whether or not it divides
+            # evenly, no remainer
             target = self.if_false if item % self.divisor else self.if_true
             if self.debug:
                 print(f'  target={target}')
