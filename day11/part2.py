@@ -64,6 +64,19 @@ class Monkey:
             # results of our checking with % while keeping the numbers small
             # enough to avoid the slow and expensive python large number support
             # (that might work, but not for a very very long time.)
+            #
+            # the reason we use the product of all the monkey's divisors is so
+            # that item divisor checks still work after we modify it once the
+            # item is passed to other monkeys who have different divisors. See
+            # https://www.reddit.com/r/adventofcode/comments/ziw4aq/2022_day_11_part_2_so_about_the_trick/izsoflc/
+            # for a better explination and discusion, including why the divisors
+            # don't have to be primes.
+            #
+            # they're small values here so that the product keeps things small
+            # enough that the old * old op will never overflow a 32-bit int.
+            # that isn't an issue in python, but fixed int languages like C
+            # would care. the fact that they're primes doesn't appear to be
+            # important in this case.
             item %= prod
             if self.debug:
                 print(f'  post % {prod}={item}')
