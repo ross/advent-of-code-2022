@@ -26,20 +26,6 @@ class Cave:
     def __init__(self, sensors):
         self.sensors = sensors
 
-        min_x = min_y = 999999999
-        max_x = max_y = -999999999
-        for sensor in sensors:
-            distance = sensor.distance
-            min_x = min(min_x, sensor.x - distance, sensor.beacon_x)
-            min_y = min(min_y, sensor.y - distance, sensor.beacon_y)
-            max_x = max(max_x, sensor.x + distance, sensor.beacon_x)
-            max_y = max(max_y, sensor.y + distance, sensor.beacon_y)
-
-        self.min_x = min_x
-        self.min_y = min_y
-        self.max_x = max_x
-        self.max_y = max_y
-
     def unavailable(self, y):
         cells = set()
         for sensor in self.sensors:
@@ -48,7 +34,10 @@ class Cave:
             if dy > sensor.distance:
                 # we're not interested in this one
                 continue
-            for dx in range(sensor.distance - dy + 1):
+            # how big a swath will it make in this row
+            dx = sensor.distance - dy
+            # mark the cells, both forward and back from the sensor's x
+            for dx in range(dx + 1):
                 cells.add(sensor.x - dx)
                 cells.add(sensor.x + dx)
 
@@ -59,6 +48,7 @@ class Cave:
             if sensor.beacon_y == y:
                 cells.discard(sensor.beacon_x)
 
+        # the number of cells remaining is the marked count we're after
         return len(cells)
 
 

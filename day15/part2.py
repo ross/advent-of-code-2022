@@ -26,20 +26,6 @@ class Cave:
     def __init__(self, sensors):
         self.sensors = sensors
 
-        min_x = min_y = 999999999
-        max_x = max_y = -999999999
-        for sensor in sensors:
-            distance = sensor.distance
-            min_x = min(min_x, sensor.x - distance, sensor.beacon_x)
-            min_y = min(min_y, sensor.y - distance, sensor.beacon_y)
-            max_x = max(max_x, sensor.x + distance, sensor.beacon_x)
-            max_y = max(max_y, sensor.y + distance, sensor.beacon_y)
-
-        self.min_x = min_x
-        self.min_y = min_y
-        self.max_x = max_x
-        self.max_y = max_y
-
     def available(self, y, max_x):
         spans = []
         for sensor in self.sensors:
@@ -49,14 +35,14 @@ class Cave:
                 # we're not interested in this one
                 continue
             # how big a swath will it make in this row
-            size = sensor.distance - dy
+            dx = sensor.distance - dy
             # use that to figure out its start and end point
-            start = sensor.x - size
-            end = sensor.x + size
+            start = sensor.x - dx
+            end = sensor.x + dx
             # don't care about things that end before our range or start after
             # it
             if end >= 0 and start <= max_x:
-                spans.append((sensor.x - size, end))
+                spans.append((start, end))
 
         # sort the spans (by their start points)
         spans.sort()
@@ -76,6 +62,7 @@ class Cave:
                 # update our end
                 end = span[1]
 
+        # no gaps found
         return None, None
 
 
@@ -90,9 +77,13 @@ for line in stdin:
 
 cave = Cave(sensors)
 maximum = int(argv[1])
+# from 0 to maximum
 for y in range(maximum + 1):
+    # look for a gap
     x, y = cave.available(y, maximum)
     if x is not None:
+        # we found one
         break
 
+# calculate the frequency
 print(f'x={x}, y={y}, freq={x*4000000+y}')
