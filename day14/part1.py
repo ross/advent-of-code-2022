@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 from pprint import pprint
-from sys import stdin
+from sys import argv, stdin
 
 
 class Cave:
-    def __init__(self, paths):
+    def __init__(self, paths, debug=False):
+        self.debug = debug
 
         # find our mins and maxes, we'll just find the max y as our y size
         # directly since we'll only be translating x
@@ -24,12 +25,13 @@ class Cave:
         # find our x size
         x_size = x_max - x_min + 1
 
-        pprint(
-            {
-                'paths': paths,
-                'ranges': {'x': (x_min, x_max, x_size), 'y': (y_size)},
-            }
-        )
+        if self.debug:
+            pprint(
+                {
+                    'paths': paths,
+                    'ranges': {'x': (x_min, x_max, x_size), 'y': (y_size)},
+                }
+            )
 
         # create our blank grid, y rows, x cols in each row to match problem
         # examples 0,0 is top-left and y goes down the vertical axis, x across
@@ -39,48 +41,48 @@ class Cave:
         for path in paths:
             self.draw_path(path, x_min)
 
+        # store our translated drop point
         self.drop_point = (500 - x_min, 0)
+        # and mark it on the grid
         self.grid[0][self.drop_point[0]] = '+'
 
-        self.draw_grid()
+        if self.debug:
+            self.draw_grid()
 
     def draw_path(self, path, x_min):
-        pprint({'path': path})
+        if self.debug:
+            pprint({'path': path})
+        # for each pair of points
         start = path[0]
         for end in path[1:]:
             self.draw_line(start, end, x_min)
             start = end
 
     def draw_line(self, start, end, x_min):
-        pprint({'start': start, 'end': end})
+        if self.debug:
+            pprint({'start': start, 'end': end})
 
         x_start = start[0]
         y_start = start[1]
         x_end = end[0]
         y_end = end[1]
 
-        pprint(
-            {
-                'x_start': x_start,
-                'x_end': x_end,
-                'y_start': y_start,
-                'y_end': y_end,
-            }
-        )
-
+        # flip things so that we're always going left to right or top to bottom,
+        # only one of these can happen since we can only do horz or vert lines
         if x_start > x_end:
             x_start, x_end = x_end, x_start
-        if y_start > y_end:
+        elif y_start > y_end:
             y_start, y_end = y_end, y_start
 
-        pprint(
-            {
-                'x_start': x_start,
-                'x_end': x_end,
-                'y_start': y_start,
-                'y_end': y_end,
-            }
-        )
+        if self.debug:
+            pprint(
+                {
+                    'x_start': x_start,
+                    'x_end': x_end,
+                    'y_start': y_start,
+                    'y_end': y_end,
+                }
+            )
 
         # translate x points to our origin
         x_start = x_start - x_min
@@ -88,14 +90,10 @@ class Cave:
 
         if x_start == x_end:
             # line is vertical
-            print('vertical')
             for y in range(y_start, y_end + 1):
-                pprint({'y': y, 'x': x_start})
                 self.grid[y][x_start] = '#'
         else:  # line is horizontal
-            print('horizontal')
             for x in range(x_start, x_end + 1):
-                pprint({'y': y_start, 'x': x})
                 self.grid[y_start][x] = '#'
 
     def draw_grid(self):
@@ -110,7 +108,7 @@ class Cave:
             if y + 1 == n:
                 # we fell off to infinity/didn't land
                 return False
-            if self.grid[y + 1][x] == '.':
+            elif self.grid[y + 1][x] == '.':
                 # fall straight down
                 y += 1
             elif self.grid[y + 1][x - 1] == '.':
@@ -127,6 +125,7 @@ class Cave:
 
         self.grid[y][x] = 'o'
 
+        # we dropped and can keep going
         return True
 
 
@@ -139,12 +138,14 @@ for row in stdin:
         path.append(tuple(int(v) for v in point.split(',')))
     paths.append(path)
 
-# create cave
-cave = Cave(paths)
+debug = 'debug' in argv
+
+cave = Cave(paths, debug=debug)
 i = 0
 while cave.drop():
-    print(f'Grain {i}')
-    cave.draw_grid()
+    if debug:
+        print(f'Grain {i}')
+        cave.draw_grid()
     i += 1
 
 print(i)

@@ -29,9 +29,10 @@ class Cave:
         x_min -= y_size
         x_max += y_size
 
-        # find our x size
+        # finally find our expanded x size
         x_size = x_max - x_min
 
+        # define the floor
         floor = ((0, y_size), (x_size, y_size))
 
         if self.debug:
@@ -48,20 +49,25 @@ class Cave:
         # the horizontal
         self.grid = [['.'] * (x_size + 1) for _ in range(y_size + 1)]
 
+        # draw the paths on the grid
         for path in paths:
             self.draw_path(path, x_min)
 
-        # draw the floor
+        # draw the floor, no x_min b/c it's pre-translated
         self.draw_path(floor)
 
+        # store our translated drop point
         self.drop_point = (500 - x_min, 0)
+        # and mark it on the grid
         self.grid[0][self.drop_point[0]] = '+'
 
-        self.draw_grid()
+        if self.debug:
+            self.draw_grid()
 
     def draw_path(self, path, x_min=0):
         if self.debug:
             pprint({'path': path})
+        # for each pair of points
         start = path[0]
         for end in path[1:]:
             self.draw_line(start, end, x_min)
@@ -76,19 +82,11 @@ class Cave:
         x_end = end[0]
         y_end = end[1]
 
-        if self.debug:
-            pprint(
-                {
-                    'x_start': x_start,
-                    'x_end': x_end,
-                    'y_start': y_start,
-                    'y_end': y_end,
-                }
-            )
-
+        # flip things so that we're always going left to right or top to bottom,
+        # only one of these can happen since we can only do horz or vert lines
         if x_start > x_end:
             x_start, x_end = x_end, x_start
-        if y_start > y_end:
+        elif y_start > y_end:
             y_start, y_end = y_end, y_start
 
         if self.debug:
@@ -120,11 +118,7 @@ class Cave:
     def drop(self):
         # start at our drop point
         x, y = self.drop_point
-        n = len(self.grid)
         while True:
-            if y + 1 == n:
-                # we fell off to infinity/didn't land
-                return False
             if self.grid[y + 1][x] == '.':
                 # fall straight down
                 y += 1
@@ -142,7 +136,8 @@ class Cave:
 
         self.grid[y][x] = 'o'
 
-        # when y == drop point we've landed on the origin and we're done
+        # when y == drop point we couldn't fall at all and we're done, otherwise
+        # we can drop more
         return y != self.drop_point[1]
 
 
@@ -155,15 +150,17 @@ for row in stdin:
         path.append(tuple(int(v) for v in point.split(',')))
     paths.append(path)
 
-
 debug = 'debug' in argv
 
-# create cave
 cave = Cave(paths, debug=debug)
-i = 1
-while cave.drop():
+i = 0
+while True:
     i += 1
+    if not cave.drop():
+        # we dropped on the origin and can't dro anymore, we're done
+        break
 
-print(f'Grain {i}')
-cave.draw_grid()
+if debug:
+    print(f'Grain {i}')
+    cave.draw_grid()
 print(i)
